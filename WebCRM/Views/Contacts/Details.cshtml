@@ -1,0 +1,164 @@
+﻿@model WebCRM.Models.Contact
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        // load up company activity history
+        $.ajax({
+            // Get ActivityHistory PartialView
+            url: "/Contacts/ActivityHistory/@Model.ID",
+            type: 'Get',
+            success: function (data) {
+                $("#contactActivityHistory").empty().append(data);
+            },
+            error: function () {
+                alert("unable to retrieve contact activities - something went bad...");
+            },
+            complete: function () {
+                $('#wait1').hide();
+            }
+        });
+    });
+
+</script>
+
+<h2>Details</h2>
+
+<div>
+    <h4>Contact</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Honorific)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Honorific)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.FirstName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.FirstName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.MiddleName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.MiddleName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.LastName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.LastName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Suffix)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Suffix)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Title)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Title)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Phone)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Phone)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Fax)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Fax)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Email)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Email)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.AlternateEmail)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.AlternateEmail)
+        </dd>
+
+        <dt>
+            Company
+        </dt>
+
+        <dd>
+            @ViewBag.selectedCompanyName
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CreatedAt)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CreatedAt)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.UpdatedAt)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.UpdatedAt)
+        </dd>
+
+    </dl>
+
+    <dl class="dl-horizontal">
+        <dt>
+            Activities
+            <br />
+            @Html.ActionLink("Create New", "Create", "ActivityHistories", new { fromId = Model.ID, from = "contact_view" }, new { @class = "btn btn-info" })
+        </dt>
+        <dd>
+            <div id="contactActivityHistory"><img src="~/Content/ajax-loader.gif" id="wait1" /></div>
+        </dd>
+    </dl>
+
+</div>
+
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.ID }, new { @class = "btn btn-info" }) |
+    @if (@ViewBag.from == "company_view")
+    { 
+      @Html.ActionLink("Back to Company", "Details", "Companies", new { id = Model.Companies.First().ID }, new { })
+    }
+    else 
+    {
+      @Html.ActionLink("Back to List", "Index")
+    }
+    
+</p>

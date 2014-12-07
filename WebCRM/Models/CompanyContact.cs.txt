@@ -1,0 +1,17 @@
+﻿namespace WebCRM.Models
+{
+    using System;
+    using System.Collections.Generic;
+    using System.Data.Entity;
+    using System.Linq;
+
+    public class CompanyContact
+    {
+        public int ID { get; set; }
+        public int CompanyID { get; set; }
+        public int ContactID { get; set; }
+
+        public virtual Company Company { get; set; }
+        public virtual Contact Contact { get; set; }
+    }
+}

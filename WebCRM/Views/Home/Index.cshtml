@@ -1,0 +1,30 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="jumbotron">
+    <h1>WebCRM Demo App</h1>
+    <p class="lead">
+    <p>A basic HTML-only CRUD (Create, Read, Update, Delete) example using ASP.Net, MVC 5, Entity Framework 6 and contains the
+    following modules:
+    <ul>
+        
+        <li>@Html.ActionLink("Companies", "Index", "Companies", new { }, new { })</li>
+        <li>@Html.ActionLink("Contacts", "Index", "Contacts", new { }, new { })</li>
+        <li>@Html.ActionLink("Activities", "Index", "ActivityHistories", new { }, new { })</li>
+    </ul>
+    The @Html.ActionLink("About", "About") page describes some of the MVC / EntityFramework / Javascript functionality
+    used to build this small web app.
+    </p>
+</div>
+
+<div class="row">
+    <div class="col-md-offset-1 col-md-10">
+        This application is intended solely for the purposes of exploring the MS MVC and EntityFramework.
+        This version was built with Visual Studio 2013 using MVC5, EntityFramework 6, and SQL Server LocalDB for data
+        storage.  There's really nothing fancy going on in terms of user interface / experience.  Mostly HTML with some
+        AJAX calls thrown in on the front-end and MVC / EF on the server.  Feel free to download, cut it up, use parts 
+        of it in any way desired.  
+    </div>
+</div>
+

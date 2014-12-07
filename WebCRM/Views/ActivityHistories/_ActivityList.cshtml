@@ -1,0 +1,68 @@
+﻿@model IEnumerable<WebCRM.Models.ActivityHistory>
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.ActivityDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ActivityType)
+        </th>
+        @if (ViewBag.ActivityListFrom != "company_view" && ViewBag.ActivityListFrom != "contact_view")
+        { 
+          <th>
+            Company Name
+          </th>
+        }
+        @if (ViewBag.ActivityListFrom != "contact_view")
+        { 
+          <th>
+            @Html.DisplayNameFor(model => model.Contact.LastName)
+          </th>
+        }
+        <th class="hidden-xs">
+            @Html.DisplayNameFor(model => model.ActivityStatus)
+        </th>
+        <th class="hidden-xs">
+            @Html.DisplayNameFor(model => model.Subject)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.ActivityDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ActivityType)
+            </td>
+            @if (ViewBag.ActivityListFrom != "company_view" && ViewBag.ActivityListFrom != "contact_view")
+            { 
+              <td>
+                  @Html.DisplayFor(modelItem => item.Company.Name)
+              </td>
+            }
+            @if (ViewBag.ActivityListFrom != "contact_view")
+            { 
+              <td>
+                  @Html.DisplayFor(modelItem => item.Contact.LastName)
+              </td>
+            }
+            <td class="hidden-xs">
+                @Html.DisplayFor(modelItem => item.ActivityStatus)
+            </td>
+            <td class="hidden-xs">
+                @Html.DisplayFor(modelItem => item.Subject)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", "ActivityHistories", new { id = item.ID, from = @ViewBag.ActivityListFrom }, new { }) |
+                @Html.ActionLink("Details", "Details", "ActivityHistories", new { id = item.ID, from = @ViewBag.ActivityListFrom }, new { }) |
+                @Html.ActionLink("Delete", "Delete", "ActivityHistories", new { id = item.ID, from = @ViewBag.ActivityListFrom }, new { })
+            </td>
+        </tr>
+    }
+
+</table>
+

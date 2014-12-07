@@ -1,0 +1,56 @@
+﻿@model IEnumerable<WebCRM.ViewModels.ContactListViewModel>
+
+<table class="table table-bordered table-hover table-striped">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.FullName)
+        </th>
+        <th class="hidden-xs">
+            @Html.DisplayNameFor(model => model.Title)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Phone)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Email)
+        </th>
+        @if (ViewBag.ContactListFrom != "company_view")
+        {
+          <th class="hidden-xs">
+              @Html.DisplayNameFor(model => model.CompanyName)
+          </th>
+        }
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.FullName)
+            </td>
+            <td class="hidden-xs">
+                @Html.DisplayFor(modelItem => item.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Phone)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Email)
+            </td>
+            @if (ViewBag.ContactListFrom != "company_view")
+            { 
+              <td class="hidden-xs">
+                  @Html.DisplayFor(modelItem => item.CompanyName)
+              </td>
+            }
+            <td>
+                @Html.ActionLink("Edit", "Edit", "Contacts", new { id = item.ID, from = @ViewBag.ContactListFrom }, new { }) |
+                @Html.ActionLink("Details", "Details", "Contacts", new { id = item.ID, from = @ViewBag.ContactListFrom }, new { }) |
+                @Html.ActionLink("Delete", "Delete", "Contacts", new { id = item.ID, from = @ViewBag.ContactListFrom }, new {})
+            </td>
+        </tr>
+    }
+
+</table>
+

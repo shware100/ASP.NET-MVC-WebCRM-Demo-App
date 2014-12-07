@@ -1,0 +1,164 @@
+﻿@model WebCRM.Models.Company
+
+@{
+    ViewBag.Title = "Company Details";
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        // load up company contacts
+        $.ajax({
+            // Get Contacts PartialView
+            url: "/Companies/CompanyContacts/@Model.ID",
+            type: 'Get',
+            success: function (data) {
+                $("#companyContacts").empty().append(data);
+            },
+            error: function () {
+                alert("unable to retrieve company contacts - something went bad...");
+            },
+            complete: function() {
+                $('#wait1').hide();
+            }
+        });
+
+        // load up company activity history
+        $.ajax({
+            // Get ActivityHistory PartialView
+            url: "/Companies/ActivityHistory/@Model.ID",
+            type: 'Get',
+            success: function (data) {
+                $("#companyActivityHistory").empty().append(data);
+            },
+            error: function () {
+                alert("unable to retrieve company activities - something went bad...");
+            },
+            complete: function () {
+                $('#wait2').hide();
+            }
+        });
+
+    });
+
+    $(document).ready(function () {
+    });
+
+</script>
+<h4>Company</h4>
+<hr />
+<dl class="dl-horizontal">
+    <dt>
+        @Html.DisplayNameFor(model => model.Name)
+    </dt>
+
+    <dd>
+        @Html.DisplayFor(model => model.Name)
+    </dd>
+
+    <dt>
+        @Html.DisplayNameFor(model => model.Address1)
+    </dt>
+
+    <dd>
+        @Html.DisplayFor(model => model.Address1)
+    </dd>
+
+    <dt>
+        @Html.DisplayNameFor(model => model.Address2)
+    </dt>
+
+    <dd>
+        @Html.DisplayFor(model => model.Address2)
+    </dd>
+
+    <dt>
+        @Html.DisplayNameFor(model => model.CityRegion)
+    </dt>
+
+    <dd>
+        @Html.DisplayFor(model => model.CityRegion)
+    </dd>
+
+    <dt>
+        @Html.DisplayNameFor(model => model.StateProvince)
+    </dt>
+
+    <dd>
+        @Html.DisplayFor(model => model.StateProvince)
+    </dd>
+
+    <dt>
+        @Html.DisplayNameFor(model => model.PostalCode)
+    </dt>
+
+    <dd>
+        @Html.DisplayFor(model => model.PostalCode)
+    </dd>
+
+    <dt>
+        @Html.DisplayNameFor(model => model.Country)
+    </dt>
+
+    <dd>
+        @Html.DisplayFor(model => model.Country)
+    </dd>
+
+    <dt>
+        @Html.DisplayNameFor(model => model.Phone)
+    </dt>
+
+    <dd>
+        @Html.DisplayFor(model => model.Phone)
+    </dd>
+
+    <dt>
+        @Html.DisplayNameFor(model => model.Fax)
+    </dt>
+
+    <dd>
+        @Html.DisplayFor(model => model.Fax)
+    </dd>
+
+    <dt>
+        @Html.DisplayNameFor(model => model.CreatedAt)
+    </dt>
+
+    <dd>
+        @Html.DisplayFor(model => model.CreatedAt)
+    </dd>
+
+    <dt>
+        @Html.DisplayNameFor(model => model.UpdatedAt)
+    </dt>
+
+    <dd>
+        @Html.DisplayFor(model => model.UpdatedAt)
+    </dd>
+
+
+</dl>
+<dl class="dl-horizontal">
+    <dt>Contacts
+    <br />
+        @Html.ActionLink("Create New", "Create", "Contacts", new { companyId = Model.ID, from = "company_view" }, new { @class = "btn btn-info" })
+    </dt>
+    <dd>
+        <div id="companyContacts"><img src="~/Content/ajax-loader.gif" id="wait1" /></div>
+    </dd>
+</dl>
+
+<dl class="dl-horizontal">
+    <dt>
+        Activities
+        <br />
+        @Html.ActionLink("Create New", "Create", "ActivityHistories", new { fromId = Model.ID, from = "company_view" }, new { @class = "btn btn-info" })
+    </dt>
+    <dd>
+        <div id="companyActivityHistory"><img src="~/Content/ajax-loader.gif" id="wait2" /></div>
+    </dd>
+</dl>
+
+    <p>
+        @Html.ActionLink("Edit", "Edit", new { id = Model.ID }) |
+        @Html.ActionLink("Back to List", "Index")
+    </p>

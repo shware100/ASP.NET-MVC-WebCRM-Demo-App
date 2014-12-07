@@ -1,0 +1,78 @@
+﻿@model IEnumerable<WebCRM.Models.Company>
+
+@{
+    ViewBag.Title = "Companies List";
+}
+
+<h2>Companies List</h2>
+
+<div class="panel">
+    <div class="panel-heading"></div>
+    <div class="panel-footer text-right">
+        @Html.ActionLink("Create New", "Create", null, new { @class = "btn btn-info" })
+    </div>
+</div>
+<table class="table table-condensed table-striped table-hover">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Name)
+        </th>
+        <th class="hidden-xs ">
+            @Html.DisplayNameFor(model => model.Address1)
+        </th>
+        <th class="hidden-xs hidden-sm">
+            @Html.DisplayNameFor(model => model.CityRegion)
+        </th>
+        <th class="hidden-xs hidden-sm">
+            @Html.DisplayNameFor(model => model.StateProvince)
+        </th>
+        <th class="hidden-xs hidden-sm">
+            @Html.DisplayNameFor(model => model.PostalCode)
+        </th>
+        <th class="hidden-xs hidden-sm">
+            @Html.DisplayNameFor(model => model.Country)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Phone)
+        </th>
+        <th class="hidden-xs">
+            @Html.DisplayNameFor(model => model.Fax)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td class="hidden-xs ">
+                @Html.DisplayFor(modelItem => item.Address1)
+            </td>
+            <td class="hidden-xs hidden-sm">
+                @Html.DisplayFor(modelItem => item.CityRegion)
+            </td>
+            <td class="hidden-xs hidden-sm">
+                @Html.DisplayFor(modelItem => item.StateProvince)
+            </td>
+            <td class="hidden-xs hidden-sm">
+                @Html.DisplayFor(modelItem => item.PostalCode)
+            </td>
+            <td class="hidden-xs hidden-sm">
+                @Html.DisplayFor(modelItem => item.Country)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Phone)
+            </td>
+            <td class="hidden-xs">
+                @Html.DisplayFor(modelItem => item.Fax)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.ID }) |
+                @Html.ActionLink("Details", "Details", new { id = item.ID }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.ID })
+            </td>
+        </tr>
+    }
+</table>

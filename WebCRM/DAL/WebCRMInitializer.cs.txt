@@ -1,0 +1,86 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Data.Entity;
+using WebCRM.Models;
+
+namespace WebCRM.DAL
+{
+    public class WebCRMInitializer : System.Data.Entity. DropCreateDatabaseIfModelChanges<WebCRMDBContext>
+    {
+        protected override void Seed(WebCRMDBContext context)
+        {
+            var companies = new List<Company>
+            {
+                new Company{ ID = 1, Name = "Company 001", Address1 = "100 Main St.", Address2 = "PO Box 100", CityRegion="Morrisville", StateProvince="PA", PostalCode="19067", Phone="(215) 333-1111", Fax="(215) 333-1112", CreatedAt=DateTime.Parse("2014-12-03")},
+                new Company{ ID = 2, Name = "Company 002", Address1 = "200 Main St.", Address2 = "PO Box 200", CityRegion="Morrisville", StateProvince="PA", PostalCode="19067", Phone="(215) 333-2222", Fax="(215) 333-2221", CreatedAt=DateTime.Parse("2014-12-03")},
+                new Company{ ID = 3, Name = "Company 003", Address1 = "300 Main St.", Address2 = "PO Box 300", CityRegion="Morrisville", StateProvince="PA", PostalCode="19067", Phone="(215) 333-3333", Fax="(215) 333-3332", CreatedAt=DateTime.Parse("2014-12-03")},
+                new Company{ ID = 4, Name = "Company 004", Address1 = "400 Main St.", Address2 = "PO Box 400", CityRegion="Morrisville", StateProvince="PA", PostalCode="19067", Phone="(215) 333-4444", Fax="(215) 333-4442", CreatedAt=DateTime.Parse("2014-12-03")},
+                new Company{ ID = 5, Name = "Company 005", Address1 = "500 Main St.", Address2 = "PO Box 500", CityRegion="Morrisville", StateProvince="PA", PostalCode="19067", Phone="(215) 333-5555", Fax="(215) 333-5552", CreatedAt=DateTime.Parse("2014-12-03")}
+            };
+
+            companies.ForEach(s => context.Companies.Add(s));
+            context.SaveChanges();
+
+            var contacts = new List<Contact>
+            {
+                // company 1 contacts
+                new Contact{ID = 1, FirstName = "John", LastName = "Doe", Email="jdoe@somesite.com", Title = "Doe Title"},
+                new Contact{ID = 2, FirstName = "Jack", LastName = "Reacher", Email="jreacher@somesite.com", Title = "Reacher Title"},
+                new Contact{ID = 3, FirstName = "Ron", LastName = "Reagan", Email="rreagan@somesite.com", Title = "Reagan Title"},
+
+                // company 2 contacts
+                new Contact{ID = 4, FirstName = "Jane", LastName = "Doe", Email="jdoe2@somesite.com", Title = "Doe2 Title"},
+                new Contact{ID = 5, FirstName = "Jim", LastName = "Kirk", Email="jkirk@somesite.com", Title = "Kirk Title"},
+                new Contact{ID = 6, FirstName = "Hikaru", LastName = "Sulu", Email="hsulu@somesite.com", Title = "Sulu Title"},
+
+                // company 3 contacts
+                new Contact{ID = 7, FirstName = "Bugs", LastName = "Bunny", Email="bbunny@somesite.com", Title = "Bunny Title"},
+                new Contact{ID = 8, FirstName = "Road", LastName = "Runner", Email="rrunner@somesite.com", Title = "Runner Title"},
+                new Contact{ID = 9, FirstName = "Porky", LastName = "Pig", Email="ppig@somesite.com", Title = "Pig Title"},
+
+                // company 4 contacts
+                new Contact{ID = 10, FirstName = "Bruce", LastName = "Wayne", Email="bwayne@somesite.com", Title = "Wayne Title"},
+                new Contact{ID = 11, FirstName = "Jim", LastName = "Grayson", Email="jgrayson@somesite.com", Title = "Grayson Title"},
+                new Contact{ID = 12, FirstName = "The", LastName = "Riddler", Email="triddler@somesite.com", Title = "Riddler Title"},
+
+                // company 5 contacts
+                new Contact{ID = 13, FirstName = "Peggy", LastName = "Smith", Email="psmith@somesite.com", Title = "Smith Title"},
+                new Contact{ID = 14, FirstName = "George", LastName = "Bush", Email="gbush@somesite.com", Title = "Bush Title"},
+                new Contact{ID = 15, FirstName = "Bill", LastName = "Clinton", Email="bclinton@somesite.com", Title = "Clinton Title"}
+
+            };
+
+            contacts.ForEach(s => context.Contacts.Add(s));
+            context.SaveChanges();
+
+            var companycontacts = new List<CompanyContact>
+            {
+                new CompanyContact{ID=1, CompanyID=1, ContactID=1},
+                new CompanyContact{ID=2, CompanyID=1, ContactID=2},
+                new CompanyContact{ID=3, CompanyID=1, ContactID=3},
+
+                new CompanyContact{ID=4, CompanyID=2, ContactID=4},
+                new CompanyContact{ID=5, CompanyID=2, ContactID=5},
+                new CompanyContact{ID=6, CompanyID=2, ContactID=6},
+
+                new CompanyContact{ID=7, CompanyID=3, ContactID=7},
+                new CompanyContact{ID=8, CompanyID=3, ContactID=8},
+                new CompanyContact{ID=9, CompanyID=3, ContactID=9},
+
+                new CompanyContact{ID=10, CompanyID=4, ContactID=10},
+                new CompanyContact{ID=11, CompanyID=4, ContactID=11},
+                new CompanyContact{ID=12, CompanyID=4, ContactID=12},
+
+                new CompanyContact{ID=13, CompanyID=5, ContactID=13},
+                new CompanyContact{ID=14, CompanyID=5, ContactID=14},
+                new CompanyContact{ID=15, CompanyID=5, ContactID=15}
+            };
+
+            companycontacts.ForEach(s => context.CompanyContacts.Add(s));
+            context.SaveChanges();
+
+        }
+    }
+}
