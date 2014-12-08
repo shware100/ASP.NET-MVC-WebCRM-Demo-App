@@ -4,6 +4,39 @@
     ViewBag.Title = "Contacts List";
 }
 
+@Scripts.Render("~/bundles/jqueryDataTables")
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#tblContacts').dataTable({
+            "bServerSide": true,
+            "sAjaxSource": "/Contacts/GetContactsList",
+            "bProcessing": true,
+            "paging": true,
+            "searching": true,
+            "aoColumns": [
+                            {
+                                "data": "ID",
+                                "sortable": false,
+                                "searchable": false,
+                                "width": 110,
+                                "render": function (data, type, row, meta) {
+                                    return "<a href=\"/Contacts/Details/" + data + "\">View</a> | " + 
+                                           "<a href=\"/Contacts/Edit/" + data + "\">Edit</a> | " +
+                                           "<a href=\"/Contacts/Delete/" + data + "\">Delete</a> ";
+
+                                }
+                            },
+                            { "data": "FullName" },
+                            { "data": "Title" },
+                            { "data": "Phone" },
+                            { "data": "Email" },
+                            { "data": "CompanyName" }
+            ],
+            "order": [1, "asc"]
+        });
+    });
+</script>
 <h2>Contacts List</h2>
 
 <div class="panel">
@@ -13,4 +46,26 @@
     </div>
 </div>
 
-@Html.Partial("_ContactsList")
+<table id="tblContacts" class="table table-bordered table-hover table-striped  display cell-border">
+    <thead>
+        <tr>
+            <th></th>
+            <th>
+                @Html.DisplayNameFor(model => model.FullName)
+            </th>
+            <th class="hidden-xs">
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Phone)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Email)
+            </th>
+            <th class="hidden-xs">
+                @Html.DisplayNameFor(model => model.CompanyName)
+            </th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>

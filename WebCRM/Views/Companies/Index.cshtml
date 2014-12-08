@@ -3,7 +3,39 @@
 @{
     ViewBag.Title = "Companies List";
 }
+@Scripts.Render("~/bundles/jqueryDataTables")
 
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#tblContactsList').dataTable({
+            "bServerSide": true,
+            "sAjaxSource": "/Companies/GetCompaniesList",
+            "bProcessing": true,
+            "aoColumns": [
+                            {
+                                "sName": "ID",
+                                "sortable": false,
+                                "searchable": false,
+                                "width": 110,
+                                "render": function (data, type, row, meta) {
+                                    return "<a href=\"/Companies/Details/" + data + "\">View</a> | " +
+                                           "<a href=\"/Companies/Edit/" + data + "\">Edit</a> | " +
+                                           "<a href=\"/Companies/Delete/" + data + "\">Delete</a> ";
+                                }
+
+                            },
+                            { "sName": "Name" },
+                            { "sName": "Address1" },
+                            { "sName": "CityRegion" },
+                            { "sName": "StateProvince" },
+                            { "sName": "PostalCode" },
+                            { "sName": "Phone" },
+                            { "sName": "Fax" }
+            ],
+            "order": [1, "asc"]
+        });
+    });
+</script>
 <h2>Companies List</h2>
 
 <div class="panel">
@@ -12,35 +44,37 @@
         @Html.ActionLink("Create New", "Create", null, new { @class = "btn btn-info" })
     </div>
 </div>
-<table class="table table-condensed table-striped table-hover">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Name)
-        </th>
-        <th class="hidden-xs ">
-            @Html.DisplayNameFor(model => model.Address1)
-        </th>
-        <th class="hidden-xs hidden-sm">
-            @Html.DisplayNameFor(model => model.CityRegion)
-        </th>
-        <th class="hidden-xs hidden-sm">
-            @Html.DisplayNameFor(model => model.StateProvince)
-        </th>
-        <th class="hidden-xs hidden-sm">
-            @Html.DisplayNameFor(model => model.PostalCode)
-        </th>
-        <th class="hidden-xs hidden-sm">
-            @Html.DisplayNameFor(model => model.Country)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Phone)
-        </th>
-        <th class="hidden-xs">
-            @Html.DisplayNameFor(model => model.Fax)
-        </th>
-        <th></th>
-    </tr>
-
+<table id="tblContactsList" class="table table-condensed table-striped table-hover display cell-border">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.ID)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th class="hidden-xs ">
+                @Html.DisplayNameFor(model => model.Address1)
+            </th>
+            <th class="hidden-xs hidden-sm">
+                @Html.DisplayNameFor(model => model.CityRegion)
+            </th>
+            <th class="hidden-xs hidden-sm">
+                @Html.DisplayNameFor(model => model.StateProvince)
+            </th>
+            <th class="hidden-xs hidden-sm">
+                @Html.DisplayNameFor(model => model.PostalCode)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Phone)
+            </th>
+            <th class="hidden-xs">
+                @Html.DisplayNameFor(model => model.Fax)
+            </th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+    @*
     @foreach (var item in Model)
     {
         <tr>
@@ -75,4 +109,5 @@
             </td>
         </tr>
     }
+    *@
 </table>

@@ -19,7 +19,78 @@ namespace WebCRM.Controllers
         // GET: Companies
         public ActionResult Index()
         {
-            return View(db.Companies.ToList());
+            return View();
+        }
+
+        public ActionResult GetCompaniesList(JQDTblParamModel dTblParams)
+        {
+
+            var allCompanies = db.Companies;
+            IEnumerable<Company> filteredCompanies;
+            if (!string.IsNullOrEmpty(dTblParams.sSearch))
+            {
+                filteredCompanies = db.Companies
+                                      .Where(c => c.Name.Contains(dTblParams.sSearch) ||
+                                                  c.Address1.Contains(dTblParams.sSearch) ||
+                                                  c.Address2.Contains(dTblParams.sSearch) ||
+                                                  c.CityRegion.Contains(dTblParams.sSearch) ||
+                                                  c.StateProvince.Contains(dTblParams.sSearch) ||
+                                                  c.PostalCode.Contains(dTblParams.sSearch) ||
+                                                  c.Country.Contains(dTblParams.sSearch) ||
+                                                  c.Phone.Contains(dTblParams.sSearch) ||
+                                                  c.Fax.Contains(dTblParams.sSearch));
+            }
+            else
+                filteredCompanies = allCompanies;
+
+            var sortColIndex = Convert.ToInt32(Request["iSortCol_0"]);
+            var sortDir = Request["sSortDir_0"];
+
+            Func<Company, string> sortOrder = (cSort => sortColIndex == 0 ? cSort.ID.ToString() : 
+                                                        sortColIndex == 1 ? cSort.Name : 
+                                                        sortColIndex == 2 ? cSort.Address1 :
+                                                        sortColIndex == 3 ? cSort.CityRegion : 
+                                                        sortColIndex == 4 ? cSort.StateProvince :
+                                                        sortColIndex == 5 ? cSort.PostalCode :
+                                                        sortColIndex == 6 ? cSort.Phone :
+                                                        sortColIndex == 7 ? cSort.Fax :
+                                                        cSort.Name);
+
+            if (sortDir == "asc")
+                filteredCompanies = filteredCompanies.OrderBy(sortOrder);
+            else
+                filteredCompanies = filteredCompanies.OrderByDescending(sortOrder);
+
+            var displayedCompanies = filteredCompanies.Skip(dTblParams.iDisplayStart).Take(dTblParams.iDisplayLength);
+
+            var totalRecs = allCompanies.Count();
+
+            // TODO: sorting / filtering can get a little kooky (especially with multi-column sorts)
+            // explore using the dbContext SQL queries directly
+            
+            var q = from c in displayedCompanies.AsEnumerable()
+                  select new []
+                  {
+                    c.ID.ToString(),
+                    c.Name.ToString(),
+                    c.Address1.ToString(),
+                    c.CityRegion.ToString(),
+                    c.StateProvince.ToString(),
+                    c.PostalCode.ToString(),
+                    c.Phone.ToString(),
+                    c.Fax.ToString(),
+                  };
+
+
+            var dispRecs = q.Count();
+            return Json(new
+            {
+                sEcho = dTblParams.sEcho,
+                iTotalRecords = totalRecs,
+                iTotalDisplayRecords = dispRecs,
+                aaData = q
+            },
+            JsonRequestBehavior.AllowGet);
         }
 
         // GET: Companies/Details/5

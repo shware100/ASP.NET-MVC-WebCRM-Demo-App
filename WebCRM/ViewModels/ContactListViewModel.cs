@@ -33,6 +33,14 @@ namespace WebCRM.ViewModels
                 return s;
             }
         }
+        [Display(Name = "Professional Title")]
+        public String Title { get; set; }
+        public String Phone { get; set; }
+        public String Email { get; set; }
+
+        [Display(Name = "Company Name")]
+        public String CompanyName { get; set; }
+
         public string Name
         {
             get
@@ -40,22 +48,15 @@ namespace WebCRM.ViewModels
                 return FullName;
             }
         }
-        public string Honorific { get; set; }
+
+        public String Honorific { get; set; }
         [Display(Name = "First Name")]
-        public string FirstName { get; set; }
+        public String FirstName { get; set; }
         [Display(Name = "Middle Name")]
-        public string MiddleName { get; set; }
+        public String MiddleName { get; set; }
         [Display(Name = "Last Name")]
-        public string LastName { get; set; }
-        public string Suffix { get; set; }
-
-        [Display(Name = "Professional Title")]
-        public string Title { get; set; }
-        public string Phone { get; set; }
-        public string Email { get; set; }
-
-        [Display(Name = "Company Name")]
-        public string CompanyName { get; set; }
+        public String LastName { get; set; }
+        public String Suffix { get; set; }
 
     }
 }

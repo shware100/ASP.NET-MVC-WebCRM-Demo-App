@@ -167,7 +167,9 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="DAL\WebCRMDBContext.cs" />
+    <Compile Include="ViewModels\CompanyListViewModel.cs" />
     <Compile Include="ViewModels\ContactListViewModel.cs" />
+    <Compile Include="ViewModels\JQDtblParamModel.cs" />
     <Content Include="DAL\WebCRMInitializer.cs.txt" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -180,6 +182,17 @@
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ActivityHistory.cs" />
     <Compile Include="Models\Company.cs" />
+    <Content Include="Images\back_disabled.png" />
+    <Content Include="Images\back_enabled.png" />
+    <Content Include="Images\back_enabled_hover.png" />
+    <Content Include="Images\forward_disabled.png" />
+    <Content Include="Images\forward_enabled.png" />
+    <Content Include="Images\forward_enabled_hover.png" />
+    <Content Include="Images\sort_asc.png" />
+    <Content Include="Images\sort_asc_disabled.png" />
+    <Content Include="Images\sort_both.png" />
+    <Content Include="Images\sort_desc.png" />
+    <Content Include="Images\sort_desc_disabled.png" />
     <Content Include="Models\CompanyContact.cs.txt" />
     <Compile Include="Models\Contact.cs" />
     <Compile Include="Models\IdentityModels.cs" />

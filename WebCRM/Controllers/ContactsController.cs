@@ -19,25 +19,94 @@ namespace WebCRM.Controllers
         // GET: Contacts
         public ActionResult Index()
         {
-            IQueryable<ContactListViewModel> q = from contacts in db.Contacts
-                                                 from companies in contacts.Companies
-                                                 select new ContactListViewModel()
-                                                 {
-                                                     ID = contacts.ID,
-                                                     Honorific = contacts.Honorific,
-                                                     FirstName = contacts.FirstName,
-                                                     MiddleName = contacts.MiddleName,
-                                                     LastName = contacts.LastName,
-                                                     Suffix = contacts.Suffix,
-                                                     Title = contacts.Title,
-                                                     Phone = contacts.Phone,
-                                                     Email = contacts.Email,
-                                                     CompanyName = companies.Name
-                                                 };
-
             // return View(db.Contacts.ToList());
-            return View(q.ToList());
+            return View();
         }
+        public ActionResult GetContactsList(JQDTblParamModel dTblParams)
+        {
+
+            string countSQL = "";
+            string selectSQL = "";
+            string sqlWhere = " WHERE 1=1 ";
+            string sqlOrder = " ORDER BY ";
+            string sqlOffSetLimit = string.Format(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY;", dTblParams.iDisplayStart, dTblParams.iDisplayLength);
+
+            countSQL = "select count(*) " +
+                       "  from Contact c " +
+                       " inner join CompanyContact cc on c.ID = cc.contactID" +
+                       " inner join Company co on co.ID = cc.companyID ";
+
+            selectSQL = "select c.ID, c.Honorific, c.FirstName, c.MiddleName, c.LastName, " +
+                        "       c.Suffix, c.Title, c.Phone, c.Email, co.Name CompanyName " +
+                        "  from Contact c " +
+                        " inner join CompanyContact cc on c.ID = cc.contactID" +
+                        " inner join Company co on co.ID = cc.companyID ";
+
+
+            var sVal = "";
+            if (!string.IsNullOrEmpty(dTblParams.sSearch))
+            {
+                sVal = string.Format("%{0}%", dTblParams.sSearch);
+                // sqlWhere += " AND (c.Honorific like '%@p0%' or c.FirstName like '%@p0%' " +
+                //            "  or c.MiddleName like '%@p0%' or c.LastName like '%@p0%' " +
+                //            "  or c.Suffix like '%@p0%' or c.Phone like '%@p0%' " +
+                //            "  or c.Email like '%@p0%' or co.Name like '%@p0%')";
+                sqlWhere += " AND (c.Honorific like @p0 or c.FirstName like @p0 " +
+                           "  or c.MiddleName like @p0 or c.LastName like @p0 " +
+                           "  or c.Suffix like @p0 or c.Phone like @p0 " +
+                           "  or c.Email like @p0 or co.Name like @p0)";
+            }
+
+            var sortColIndex = Convert.ToInt32(Request["iSortCol_0"]);
+            var sortDir = Request["sSortDir_0"];
+            sqlOrder += (sortColIndex == 0 ? string.Format("c.ID {0}", sortDir) :
+                        sortColIndex == 1 ? string.Format("c.LastName {0}, c.FirstName {0}", sortDir) :
+                        sortColIndex == 2 ? string.Format("c.Title {0}", sortDir) :
+                        sortColIndex == 3 ? string.Format("c.Phone {0}", sortDir) :
+                        sortColIndex == 4 ? string.Format("c.Email {0}", sortDir) :
+                        sortColIndex == 5 ? string.Format("co.Name {0}", sortDir) :
+                        string.Format("c.LastName {0}, c.FirstName {0}", sortDir));
+
+            string countSQLFinal = string.Format("{0} {1}", countSQL.ToString(), sqlWhere);
+            string selectSQLFinal = string.Format("{0} {1} {2} {3}", selectSQL.ToString(), sqlWhere, sqlOrder, sqlOffSetLimit);
+
+            var totalRecs = db.Database.SqlQuery<Int32>(countSQLFinal, sVal);
+            IEnumerable<ContactListViewModel> displayedContacts;
+            if (!string.IsNullOrEmpty(sVal))
+                displayedContacts = db.Database.SqlQuery<ContactListViewModel>(selectSQLFinal, sVal).ToList();
+            else
+                displayedContacts = db.Database.SqlQuery<ContactListViewModel>(selectSQLFinal, sVal).ToList();
+
+            var dispRecs = displayedContacts.Count();
+
+            // generate array appropriate for dataTables.net javascript handlers
+            /*
+            var q = from c in displayedContacts
+                    select new[]
+                  {
+                    c.ID.ToString(),
+                    c.FullName.ToString(),
+                    c.Title.ToString(),
+                    c.Phone.ToString(),
+                    c.Email.ToString(),
+                    c.CompanyName.ToString(),
+                    c.Honorific.ToString(),
+                    c.FirstName.ToString(),
+                    c.MiddleName.ToString(),
+                    c.LastName.ToString()
+                  };
+            */
+            return Json(new
+            {
+                sEcho = dTblParams.sEcho,
+                iTotalRecords = totalRecs.ElementAt(0),
+                iTotalDisplayRecords = totalRecs.ElementAt(0),
+                data = Json(displayedContacts).Data
+            },
+            "application/json",
+            JsonRequestBehavior.AllowGet);
+        }
+
 
         // GET: Contacts/Details/5
         public ActionResult Details(int? id, string from)
