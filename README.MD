@@ -35,6 +35,8 @@ A basic image uploading application with CRUD (Create, Read, Update, Delete) exa
 * Linq-to-SQL Queries
 * Linq-to-Object Queries
 * Usage of FluentAPI to Define Many-to-Many Definitions
+* Integrates Datatables.net
+* Raw SQL to Entities (Contacts List)
 
 This small app was developed to test out MS MVC and EntityFramework 6 for a simple business application like CRM.  There's nothing fancy about this application and the user interface is very basic.  Additional functionality may be added, time permitting.
 
