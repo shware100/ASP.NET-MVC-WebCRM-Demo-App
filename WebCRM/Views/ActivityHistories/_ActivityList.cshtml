@@ -3,7 +3,10 @@
 <table class="table">
     <tr>
         <th>
-            @Html.DisplayNameFor(model => model.ActivityDate)
+            @Html.DisplayNameFor(model => model.StartDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.EndDate)
         </th>
         <th>
             @Html.DisplayNameFor(model => model.ActivityType)
@@ -33,7 +36,10 @@
     {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.ActivityDate)
+                @Html.DisplayFor(modelItem => item.StartDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.EndDate)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.ActivityType)

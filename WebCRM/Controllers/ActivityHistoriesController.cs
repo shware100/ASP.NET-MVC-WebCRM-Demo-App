@@ -7,6 +7,7 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using WebCRM.DAL;
+using WebCRM.Helpers;
 using WebCRM.Models;
 using WebCRM.ViewModels;
 
@@ -19,9 +20,128 @@ namespace WebCRM.Controllers
         // GET: ActivityHistories
         public ActionResult Index()
         {
-            var activityHistory = db.ActivityHistory.Include(a => a.Company).Include(a => a.Contact);
-            return View(activityHistory.ToList());
+            // var activityHistory = db.ActivityHistory.Include(a => a.Company).Include(a => a.Contact);
+            // return View(activityHistory.ToList());
+            return View();
         }
+
+        public ActionResult GetActivitiesList(JQDTblParamModel dTblParams)
+        {
+
+            string countSQL = "";
+            string selectSQL = "";
+            string sqlWhere = " WHERE 1=1 ";
+            string sqlOrder = " ORDER BY ";
+            string sqlOffSetLimit = string.Format(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY;", dTblParams.iDisplayStart, dTblParams.iDisplayLength);
+
+            countSQL = "select count(*) " +
+                       "  from ActivityHistory a " +
+                       " inner join Contact c on c.ID = a.ContactID" +
+                       " inner join CompanyContact cc on cc.ContactID = c.ID " +
+                       " inner join Company co on co.ID = cc.companyID ";
+
+            selectSQL = "select a.ID, a.StartDate, a.EndDate, a.ActivityType, a.ActivityStatus, " +
+                        "       co.Name CompanyName, c.LastName + ', ' + c.FirstName ContactName, " +
+                        "       a.ActivityStatus, a.Subject, c.LastName, c.FirstName " +
+                        "  from ActivityHistory a " +
+                        "       inner join Contact c on c.ID = a.ContactID " +
+                        "       inner join CompanyContact cc on c.ID = cc.contactID" +
+                        "       inner join Company co on co.ID = cc.companyID ";
+
+            var sVal = "";
+            if (!string.IsNullOrEmpty(dTblParams.sSearch))
+            {
+                sVal = string.Format("%{0}%", dTblParams.sSearch);
+                sqlWhere += " AND (a.ActivityType like @p0 or a.ActivityStatus like @p0 " +
+                            "  or a.Subject like @p0 " +
+                            "  or c.LastName like @p0 or c.FirstName like @p0 " +
+                            "  or co.Name like @p0) ";
+            }
+
+            var sortColIndex = Convert.ToInt32(Request["iSortCol_0"]);
+            var sortDir = Request["sSortDir_0"];
+            sqlOrder += (sortColIndex == 0 ? string.Format("c.ID {0}", sortDir) :
+                         sortColIndex == 1 ? string.Format("a.StartDate {0}", sortDir) :
+                         sortColIndex == 2 ? string.Format("a.EndDate {0}", sortDir) :
+                         sortColIndex == 3 ? string.Format("co.Name {0}", sortDir) :
+                         sortColIndex == 4 ? string.Format("c.LastName {0}, c.FirstName {0}", sortDir) :
+                         sortColIndex == 5 ? string.Format("a.ActivityStatus {0}", sortDir) :
+                         string.Format("a.StartDate {0}", sortDir));
+
+            string countSQLFinal = string.Format("{0} {1}", countSQL.ToString(), sqlWhere);
+            string selectSQLFinal = string.Format("{0} {1} {2} {3}", selectSQL.ToString(), sqlWhere, sqlOrder, sqlOffSetLimit);
+
+            var totalRecs = db.Database.SqlQuery<Int32>(countSQLFinal, sVal);
+            IEnumerable<ActivityListViewModel> displayedActivities;
+            if (!string.IsNullOrEmpty(sVal))
+                displayedActivities = db.Database.SqlQuery<ActivityListViewModel>(selectSQLFinal, sVal).ToList();
+            else
+                displayedActivities = db.Database.SqlQuery<ActivityListViewModel>(selectSQLFinal).ToList();
+
+            var dispRecs = displayedActivities.Count();
+
+            return Json(new
+            {
+                sEcho = dTblParams.sEcho,
+                iTotalRecords = totalRecs.ElementAt(0),
+                iTotalDisplayRecords = totalRecs.ElementAt(0),
+                data = Json(displayedActivities).Data
+            },
+            "application/json",
+            JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult GetCalendarActivities(FullCalParamModel fullCalParams)
+        {
+            // gets calendar entries to be displayed in the FullCalendar javascript components
+            // which retrieves calendar items between a start and end date
+            string selectSQL = "";
+            string sqlWhere = " WHERE 1=1 ";
+            string sqlOrder = " ORDER BY a.StartDate asc";
+
+            // restrict to 250 items
+            // TODO: move these into a config file somewhere
+            int iDisplayStart = 0;
+            int iDisplayLength = 500;
+            string sqlOffSetLimit = string.Format(" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY;", iDisplayStart, iDisplayLength);
+
+            selectSQL = "select a.ID, a.StartDate start, a.EndDate, a.ActivityType, a.ActivityStatus, " +
+                        "       co.Name CompanyName, c.LastName + ', ' + c.FirstName ContactName, " +
+                        "       a.ActivityStatus, a.Subject, c.LastName, c.FirstName " +
+                        "  from ActivityHistory a " + 
+                        "       inner join Contact c on c.ID = a.ContactID " +
+                        "       inner join CompanyContact cc on c.ID = cc.contactID" +
+                        "       inner join Company co on co.ID = cc.companyID ";
+
+            DateTime? startDateParam = System.DateTime.Now;
+            DateTime? endDateParam = System.DateTime.Now;
+
+            if  (fullCalParams.StartDate != null && fullCalParams.EndDate != null) {
+                sqlWhere += " AND (StartDate >= @p0 " +
+                            " AND (EndDate IS NULL OR EndDate <= @p1)) ";
+                startDateParam = fullCalParams.StartDate;
+                endDateParam = fullCalParams.EndDate;
+            } else if (fullCalParams.StartDate != null && fullCalParams.EndDate == null) {
+                sqlWhere += " AND (StartDate = @p0 " +
+                            " OR EndDate = @p1) ";
+                startDateParam = fullCalParams.StartDate;
+                endDateParam = fullCalParams.EndDate;
+            } else if (fullCalParams.StartDate == null && fullCalParams.EndDate != null) {
+                sqlWhere += " AND (StartDate = @p0 " +
+                            " OR EndDate = @p1) ";
+                startDateParam = fullCalParams.EndDate;
+                endDateParam = fullCalParams.StartDate;
+            }
+
+            string selectSQLFinal = string.Format("{0} {1} {2} {3}", selectSQL.ToString(), sqlWhere, sqlOrder, sqlOffSetLimit);
+
+            IEnumerable<ActivityCalendarViewModel> displayedActivities;
+            displayedActivities = db.Database.SqlQuery<ActivityCalendarViewModel>(selectSQLFinal, startDateParam, endDateParam).ToList();
+
+            return new JsonNetResult() { Data = displayedActivities };
+
+        }
+
 
         // GET: ActivityHistories/Details/5
         public ActionResult Details(int? id, string from)
@@ -42,8 +162,10 @@ namespace WebCRM.Controllers
         }
 
         // GET: ActivityHistories/Create
-        public ActionResult Create(string fromId, string from)
+        public ActionResult Create(string fromId, string from, string dateIn)
         {
+            ActivityHistory activityHistory = new ActivityHistory();
+            activityHistory.ActivityStatus = ActivityStatus.Active;
             ViewBag.ContactID = null;
             int coId = -1;
             int contactId = -1;
@@ -59,29 +181,44 @@ namespace WebCRM.Controllers
                 coId = contact.Companies.First().ID;
                 ViewBag.CompanyID = new SelectList(db.Companies, "ID", "Name", contact.Companies.First().ID);
             }
-            IQueryable<ContactListViewModel> q = from contacts in db.Contacts
-                                                 from companies in contacts.Companies
-                                                 where companies.ID == coId
-                                                 select new ContactListViewModel()
-                                                 {
-                                                     ID = contacts.ID,
-                                                     Honorific = contacts.Honorific,
-                                                     FirstName = contacts.FirstName,
-                                                     MiddleName = contacts.MiddleName,
-                                                     LastName = contacts.LastName,
-                                                     Suffix = contacts.Suffix,
-                                                     Title = contacts.Title,
-                                                     Phone = contacts.Phone,
-                                                     Email = contacts.Email,
-                                                     CompanyName = companies.Name
-                                                 };
+            else
+                ViewBag.CompanyID = new SelectList(db.Companies, "ID", "Name", -1);
 
-            ViewBag.ContactID = new SelectList(q.ToList<ContactListViewModel>(), "ID", "FullName", contactId);
+            if (from == "company_view" || from == "contact_view")
+            {
+                IQueryable<ContactListViewModel> q = from contacts in db.Contacts
+                                                     from companies in contacts.Companies
+                                                     where companies.ID == coId
+                                                     select new ContactListViewModel()
+                                                     {
+                                                         ID = contacts.ID,
+                                                         Honorific = contacts.Honorific,
+                                                         FirstName = contacts.FirstName,
+                                                         MiddleName = contacts.MiddleName,
+                                                         LastName = contacts.LastName,
+                                                         Suffix = contacts.Suffix,
+                                                         Title = contacts.Title,
+                                                         Phone = contacts.Phone,
+                                                         Email = contacts.Email,
+                                                         CompanyName = companies.Name
+                                                     };
 
-            
+                ViewBag.ContactID = new SelectList(q.ToList<ContactListViewModel>(), "ID", "FullName", contactId);
+            }
             ViewBag.from = from;
             ViewBag.fromId = fromId;
-            return View();
+
+            if (!string.IsNullOrEmpty(dateIn))
+            {
+                activityHistory.StartDate = DateTime.Parse(dateIn);
+                activityHistory.EndDate = activityHistory.StartDate;
+            }
+            else
+            {
+                activityHistory.StartDate = DateTime.Now;
+                activityHistory.EndDate = DateTime.Now;
+            }
+            return View(activityHistory);
         }
 
         // POST: ActivityHistories/Create
@@ -89,7 +226,7 @@ namespace WebCRM.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "ID,ActivityType,ActivityStatus,CompanyID,ContactID,ActivityDate,Subject,Comments,CreatedAt,CreatedByID,Updatedat,UpdatedByID")] ActivityHistory activityHistory, string fromId, string from)
+        public ActionResult Create([Bind(Include = "ID,ActivityType,ActivityStatus,CompanyID,ContactID,StartDate,EndDate,Subject,Comments,CreatedAt,CreatedByID,Updatedat,UpdatedByID")] ActivityHistory activityHistory, string fromId, string from)
         {
             if (ModelState.IsValid)
             {
@@ -125,8 +262,32 @@ namespace WebCRM.Controllers
             {
                 return HttpNotFound();
             }
+            int coId = -1;
+            if (activityHistory.CompanyID != 0)
+              coId = activityHistory.CompanyID;
+
             ViewBag.CompanyID = new SelectList(db.Companies, "ID", "Name", activityHistory.CompanyID);
-            ViewBag.ContactID = new SelectList(db.Contacts, "ID", "Honorific", activityHistory.ContactID);
+
+
+            IQueryable<ContactListViewModel> q = from contacts in db.Contacts
+                                                 from companies in contacts.Companies
+                                                 where companies.ID == coId
+                                                 select new ContactListViewModel()
+                                                 {
+                                                     ID = contacts.ID,
+                                                     Honorific = contacts.Honorific,
+                                                     FirstName = contacts.FirstName,
+                                                     MiddleName = contacts.MiddleName,
+                                                     LastName = contacts.LastName,
+                                                     Suffix = contacts.Suffix,
+                                                     Title = contacts.Title,
+                                                     Phone = contacts.Phone,
+                                                     Email = contacts.Email,
+                                                     CompanyName = companies.Name
+                                                 };
+
+            ViewBag.ContactID = new SelectList(q.ToList<ContactListViewModel>(), "ID", "FullName", activityHistory.ContactID);
+
             ViewBag.from = from;
             return View(activityHistory);
         }
@@ -136,7 +297,7 @@ namespace WebCRM.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ID,ActivityType,ActivityStatus,CompanyID,ContactID,ActivityDate,Subject,Comments,CreatedAt,CreatedByID,Updatedat,UpdatedByID")] ActivityHistory activityHistory, string from)
+        public ActionResult Edit([Bind(Include = "ID,ActivityType,ActivityStatus,CompanyID,ContactID,StartDate,EndDate,Subject,Comments,CreatedAt,CreatedByID,Updatedat,UpdatedByID")] ActivityHistory activityHistory, string from)
         {
             if (ModelState.IsValid)
             {
@@ -159,6 +320,29 @@ namespace WebCRM.Controllers
 
             
             return View(activityHistory);
+        }
+        // POST: ActivityHistories/UpdateCalendarDates/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult UpdateCalendarDates(int? activityID, string days)
+        {
+            string rtn = "+ok";
+
+            ActivityHistory activityHistory = db.ActivityHistory.Find(activityID);
+            if (activityHistory == null)
+            {
+                rtn = "404";
+            }
+            else
+            {
+                int daysOffset = int.Parse(days);
+                activityHistory.StartDate = activityHistory.StartDate.AddDays(daysOffset);
+                activityHistory.EndDate = activityHistory.EndDate.AddDays(daysOffset);
+                db.Entry(activityHistory).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+            return Json (new { status = rtn}, JsonRequestBehavior.AllowGet);
+
         }
 
         // GET: ActivityHistories/Delete/5

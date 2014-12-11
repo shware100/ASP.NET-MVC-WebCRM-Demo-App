@@ -29,18 +29,34 @@ namespace WebCRM.Models
     public class ActivityHistory
     {
         public int ID { get; set; }
+
+        [Required]
         [Display(Name = "Activity Type")]
         public ActivityType? ActivityType { get; set; }
+
+        [Required]
         [Display(Name = "Activity Status")]
         public ActivityStatus? ActivityStatus { get; set; }
+
         public int CompanyID { get; set; }
         public int ContactID { get; set; }
-        [Display(Name = "Activity Date")]
+
+        [Required]
+        [Display(Name = "Start Date")]
         [DataType(DataType.DateTime)]
-        [DisplayFormat(DataFormatString = "{0:d}", ApplyFormatInEditMode = true)]
-        public DateTime ActivityDate { get; set; }
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd hh:mm tt}", ApplyFormatInEditMode = true)]
+        public DateTime StartDate { get; set; }
+
+        [Display(Name = "End Date")]
+        [DataType(DataType.DateTime)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd hh:mm tt}", ApplyFormatInEditMode = true)]
+        public DateTime EndDate { get; set; }
+
+        [Required]
         public string Subject { get; set; }
+
         public string Comments { get; set; }
+        
         [Display(Name = "Created At")]
         public DateTime CreatedAt { get; set; }
         [Display(Name = "Created By")]

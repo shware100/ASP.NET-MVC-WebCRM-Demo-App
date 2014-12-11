@@ -6,11 +6,44 @@
 
 <h2>Edit</h2>
 
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $('#CompanyID').change(function () {
+            $('#wait1').show();
+            $.ajax({
+                // Get Contacts PartialView
+                url: "/Companies/CompanyContactsDropdownList/" + $(this).val(),
+                type: 'Get',
+                success: function (data) {
+                    $("#companyContactsDropdownList").empty().append(data);
+                },
+                error: function () {
+                    alert("unable to retrieve company contacts - something went bad...");
+                },
+                complete: function () {
+                    $('#wait1').hide();
+                }
+            });
+
+        });
+
+        $('.datetime-picker').datetimepicker(
+            {
+                format: "Y-m-d H:i",
+                step: 15
+            }
+        );
+
+        $('#ActivityType').focus();
+
+    });
+</script>
 
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
-    
+
     <div class="form-horizontal">
         <h4>ActivityHistory</h4>
         <hr />
@@ -43,17 +76,26 @@
 
         <div class="form-group">
             @Html.LabelFor(model => model.ContactID, "ContactID", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
+            <div id="companyContactsDropdownList" class="col-md-10">
                 @Html.DropDownList("ContactID", null, htmlAttributes: new { @class = "form-control" })
+                <img src="/Content/ajax-loader.gif" id="wait1" style="display:none;" />
                 @Html.ValidationMessageFor(model => model.ContactID, "", new { @class = "text-danger" })
             </div>
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.ActivityDate, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.StartDate, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.ActivityDate, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.ActivityDate, "", new { @class = "text-danger" })
+                @Html.EditorFor(model => model.StartDate, new { htmlAttributes = new { @class = "form-control datetime-picker" } })
+                @Html.ValidationMessageFor(model => model.StartDate, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.EndDate, htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.EditorFor(model => model.EndDate, new { htmlAttributes = new { @class = "form-control datetime-picker" } })
+                @Html.ValidationMessageFor(model => model.EndDate, "", new { @class = "text-danger" })
             </div>
         </div>
 

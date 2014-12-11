@@ -1,15 +1,184 @@
-﻿@model IEnumerable<WebCRM.Models.ActivityHistory>
+﻿@model IEnumerable<WebCRM.ViewModels.ActivityListViewModel>
 
 @{
     ViewBag.Title = "Index";
 }
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $('#confirmDateChange').modal({
+            keyboard: true,
+            show: false,
+            backdrop: 'static'
+        });
+
+        // activity calendar in fullCalendar.js initialization
+        var prevDayClick = null;
+        var dateClick = null;
+        var doubleClick = null;
+        var clickTimer = null;
+        $('#activitiesCalendar').fullCalendar(
+            {
+                header: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'month,agendaWeek,agendaDay'
+                },
+                editable: true,
+                draggable: true,
+                events: {
+                    url: "/ActivityHistories/GetCalendarActivities",
+                    color: "yellow",
+                    textColor: "black"
+                },
+                dayClick: function (date, allDay, jsEvent, view) {
+                    var singleClick = date.toISOString();
+                    if(doubleClick==singleClick){
+                        doubleClick = null;
+                        var dateClick = new Date(date.toDate());
+                        self.document.location = "/ActivityHistories/Create/?dateIn=" + date.format("YYYY-MM-DD") + " 09:00 AM";
+                    }else{
+                        doubleClick=date.toISOString();
+                        clearInterval(clickTimer);
+                        clickTimer = setInterval(function(){
+                            doubleClick = null;
+                            clearInterval(clickTimer);
+                        }, 500);
+                    }
+                },
+                eventClick: function (calEvent, jsEvent, view) {
+                    self.document.location = "/ActivityHistories/Edit/" + calEvent.ID;
+                },
+
+                eventDrop: function (event, delta, revertFunc) {
+
+                    $('#dateChangeSubject').html(event.title);
+                    $('#btnConfirmDateChange').click(function () {
+                        var reqToken = $('input[name="__RequestVerificationToken"]').val();
+                        $.post("/ActivityHistories/UpdateCalendarDates", { "__RequestVerificationToken": reqToken, "activityID": event.ID, "days": delta._days }).done(function (data) {
+                            if (data.status != "+ok") {
+                                alert("Unable to save item - status was: " + data.status);
+                            }
+                            console.log("data");
+                            console.log(data);
+                        });
+                        $('#confirmDateChange').modal('hide');
+                    });
+                    $('#btnCancelDateChange').click(function () {
+                        console.log("change was cancelled");
+                        revertFunc();
+                    });
+
+                    $('#confirmDateChange').modal('show');
+                }
+            }
+            );
+
+        var listViewLoaded = false;
+
+        $('#tabListView').on('shown.bs.tab', function (e) {
+            if (listViewLoaded)
+                return;
+
+            listViewLoaded = true;
+            // activity item list in datatables.js initialization
+            $('#tblActivities').dataTable({
+                "bServerSide": true,
+                "sAjaxSource": "/ActivityHistories/GetActivitiesList",
+                "bProcessing": true,
+                "paging": true,
+                "searching": true,
+                "width": "100%",
+                "aoColumns": [
+                                {
+                                    "data": "ID",
+                                    "sortable": false,
+                                    "searchable": false,
+                                    "width": 110,
+                                    "render": function (data, type, row, meta) {
+                                        return "<a href=\"/ActivityHistories/Details/" + data + "\">View</a> | " +
+                                               "<a href=\"/ActivityHistories/Edit/" + data + "\">Edit</a> | " +
+                                               "<a href=\"/ActivityHistories/Delete/" + data + "\">Delete</a> ";
+
+                                    }
+                                },
+                                { "data": "StartDateDisplay" },
+                                { "data": "EndDateDisplay" },
+                                { "data": "ActivityTypeDisplay" },
+                                { "data": "ContactName" },
+                                { "data": "ActivityStatusDisplay" },
+                                { "data": "Subject" }
+                ],
+                "order": [1, "asc"]
+            });
+        });
+    });
+</script>
 
 <h2>Activities</h2>
 
 <div class="panel">
     <div class="panel-heading"></div>
     <div class="panel-footer text-right">
-        @Html.ActionLink("Create New", "Create", null, new { @class = "btn btn-info" })
+        @Html.ActionLink("Create New", "Create", null, new {@id = "btnCreateNew", @class = "btn btn-info" })
     </div>
 </div>
-@Html.Partial("_ActivityList")
+
+<div role="tabpanel">
+    <ul class="nav nav-tabs margin-bottom-10px" role="tablist">
+        <li role="presentation" class="active"><a href="#activitiesCalendar" aria-controls="activitiesCalendar" role="tab" data-toggle="tab">Calendar View</a></li>
+        <li role="presentation"><a href="#listView" aria-controls="listView" role="tab" data-toggle="tab" id="tabListView">List View</a></li>
+    </ul>
+</div>
+<div class="tab-content">
+    <div id="activitiesCalendar" role="tabpanel" class="tab-pane active"></div>
+    <div id="listView" role="tabpanel" class="tab-pane">
+        <table id="tblActivities" class="table table-bordered table-hover table-striped  display cell-border">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.StartDateDisplay)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.EndDateDisplay)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ActivityTypeDisplay)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.ContactName)
+                    </th>
+                    <th class="hidden-xs">
+                        @Html.DisplayNameFor(model => model.ActivityStatusDisplay)
+                    </th>
+                    <th class="hidden-xs">
+                        @Html.DisplayNameFor(model => model.Subject)
+                    </th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<div id="confirmDateChange" tabindex="-1" role="dialog" aria-labeledby="confirmLabel" class="modal fade">
+    <div class="modal-dialog modal-vertical-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="confirmLabel">Confirm Date Change</h4>
+            </div>
+            <div class="modal-body">
+                You changed the date of <span id="dateChangeSubject"></span>. Do you wish to save this change?
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" id="btnCancelDateChange" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="btnConfirmDateChange">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+<form style="display:none;">
+    @Html.AntiForgeryToken()
+</form>

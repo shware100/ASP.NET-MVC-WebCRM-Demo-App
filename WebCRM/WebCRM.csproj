@@ -40,6 +40,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Newtonsoft.Json.6.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -105,9 +109,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Newtonsoft.Json">
-      <HintPath>..\packages\Newtonsoft.Json.6.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
-    </Reference>
     <Reference Include="EntityFramework">
       <HintPath>..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
@@ -167,9 +168,29 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="DAL\WebCRMDBContext.cs" />
+    <Compile Include="Helpers\JsonNetResult.cs" />
+    <Compile Include="Migrations\201412090334401_UpdateActivityDates.cs" />
+    <Compile Include="Migrations\201412090334401_UpdateActivityDates.Designer.cs">
+      <DependentUpon>201412090334401_UpdateActivityDates.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201412100309013_ActivityHistoryValidations.cs" />
+    <Compile Include="Migrations\201412100309013_ActivityHistoryValidations.Designer.cs">
+      <DependentUpon>201412100309013_ActivityHistoryValidations.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ViewModels\ActivityCalendarViewModel.cs" />
+    <Compile Include="ViewModels\ActivityListViewModel.cs" />
     <Compile Include="ViewModels\CompanyListViewModel.cs" />
     <Compile Include="ViewModels\ContactListViewModel.cs" />
+    <Compile Include="ViewModels\FullCalParamModel.cs" />
     <Compile Include="ViewModels\JQDtblParamModel.cs" />
+    <Content Include="Content\ajax-loader.gif" />
+    <Content Include="Content\dataTables.bootstrap.css" />
+    <Content Include="Content\fullcalendar.css" />
+    <Content Include="Content\fullcalendar.min.css" />
+    <Content Include="Content\jquery.dataTables.css" />
+    <Content Include="Content\jquery.dataTables.min.css" />
+    <Content Include="Content\jquery.dataTables_themeroller.css" />
+    <Content Include="Content\jquery.datetimepicker.css" />
     <Content Include="DAL\WebCRMInitializer.cs.txt" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -210,14 +231,23 @@
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
+    <Content Include="Scripts\dataTables.bootstrap.js" />
+    <Content Include="Scripts\dataTables.bootstrap.min.js" />
+    <Content Include="Scripts\fullcalendar.js" />
+    <Content Include="Scripts\fullcalendar.min.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery.dataTables.js" />
+    <Content Include="Scripts\jquery.dataTables.min.js" />
+    <Content Include="Scripts\jquery.datetimepicker.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
+    <Content Include="Scripts\moment.js" />
+    <Content Include="Scripts\moment.min.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\_references.js" />
@@ -288,6 +318,12 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201412050325069_InitialDatabase.resx">
       <DependentUpon>201412050325069_InitialDatabase.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201412090334401_UpdateActivityDates.resx">
+      <DependentUpon>201412090334401_UpdateActivityDates.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201412100309013_ActivityHistoryValidations.resx">
+      <DependentUpon>201412100309013_ActivityHistoryValidations.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

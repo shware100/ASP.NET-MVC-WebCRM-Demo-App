@@ -12,10 +12,14 @@ namespace WebCRM
                         "~/Scripts/jquery-{version}.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include(
-                        "~/Scripts/jquery.validate*"));
+                        "~/Scripts/jquery.validate*",
+                        "~/Scripts/jquery.datetimepicker*"));
 
             bundles.Add(new ScriptBundle("~/bundles/jqueryDatatables").Include(
             "~/Scripts/jquery.dataTables.*", "~/Scripts/dataTables.bootStrap*"));
+
+            bundles.Add(new ScriptBundle("~/bundles/fullCalendar").Include(
+                "~/Scripts/moment*", "~/Scripts/fullCalendar*"));
 
             // Use the development version of Modernizr to develop with and learn from. Then, when you're
             // ready for production, use the build tool at http://modernizr.com to pick only the tests you need.
@@ -29,7 +33,10 @@ namespace WebCRM
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/site.css",
-                      "~/Content/dataTables*"));
+                      "~/Content/dataTables*",
+                      "~/Content/fullcalendar.css",
+                      "~/Content/jquery.datetimepicker.css"));
+
         }
     }
 }
