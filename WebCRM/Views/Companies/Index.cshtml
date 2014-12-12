@@ -35,14 +35,23 @@
         });
     });
 </script>
-<h2>Companies List</h2>
 
-<div class="panel">
-    <div class="panel-heading"></div>
-    <div class="panel-footer text-right">
-        @Html.ActionLink("Create New", "Create", null, new { @class = "btn btn-info" })
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-6">
+                <h4>
+                    <span class="glyphicon glyphicon-th-list"></span>
+                    Companies
+                </h4>
+            </div>
+            <div class="col-md-6 text-right">
+                @Html.ActionLink("Create New", "Create", null, new { @class = "btn btn-info" })
+            </div>
+        </div>
     </div>
 </div>
+
 <table id="tblContactsList" class="table table-condensed table-striped table-hover display cell-border">
     <thead>
         <tr>

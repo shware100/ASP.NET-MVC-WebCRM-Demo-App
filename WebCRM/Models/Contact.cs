@@ -18,10 +18,18 @@ namespace WebCRM.Models
         public string LastName { get; set; }
         public string Suffix { get; set; }
         public string Title { get; set; }
+        
+        [DataType(DataType.PhoneNumber)]
         public string Phone { get; set; }
+        
+        [DataType(DataType.PhoneNumber)]
         public string Fax { get; set; }
+        
+        [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
+
         [Display(Name = "Alt. Email")]
+        [DataType(DataType.EmailAddress)]
         public string AlternateEmail { get; set; }
         [Display(Name = "Created At")]
         public DateTime CreatedAt { get; set; }

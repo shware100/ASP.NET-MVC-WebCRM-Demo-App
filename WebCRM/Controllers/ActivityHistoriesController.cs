@@ -324,7 +324,7 @@ namespace WebCRM.Controllers
         // POST: ActivityHistories/UpdateCalendarDates/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult UpdateCalendarDates(int? activityID, string days)
+        public ActionResult UpdateCalendarDates(int? activityID, string months, string days, string msecs, string resize)
         {
             string rtn = "+ok";
 
@@ -335,9 +335,13 @@ namespace WebCRM.Controllers
             }
             else
             {
+                int monthsOffset = int.Parse(months);
                 int daysOffset = int.Parse(days);
-                activityHistory.StartDate = activityHistory.StartDate.AddDays(daysOffset);
-                activityHistory.EndDate = activityHistory.EndDate.AddDays(daysOffset);
+                int msecsOffset = int.Parse(msecs);
+
+                if (resize != "true")
+                  activityHistory.StartDate = activityHistory.StartDate.AddMonths(monthsOffset).AddDays(daysOffset).AddMilliseconds(msecsOffset);
+                activityHistory.EndDate = activityHistory.EndDate.AddMonths(monthsOffset).AddDays(daysOffset).AddMilliseconds(msecsOffset);
                 db.Entry(activityHistory).State = EntityState.Modified;
                 db.SaveChanges();
             }

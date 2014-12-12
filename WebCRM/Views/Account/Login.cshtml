@@ -5,6 +5,24 @@
 }
 
 <h2>@ViewBag.Title.</h2>
+
+@{
+    if (!String.IsNullOrEmpty(ViewBag.errorMessage))
+    {
+        <h2 class="text-danger">@ViewBag.errorMessage</h2>
+    }
+    if (!String.IsNullOrEmpty(ViewBag.Message))
+    {
+        <div class="row">
+            <div class="col-md-12">
+                <div class="text-danger">
+                    @ViewBag.Message
+                </div>
+            </div>
+        </div>
+    }
+}
+
 <div class="row">
     <div class="col-md-8">
         <section id="loginForm">
@@ -44,10 +62,9 @@
                 <p>
                     @Html.ActionLink("Register as a new user", "Register")
                 </p>
-                @* Enable this once you have account confirmation enabled for password reset functionality
                     <p>
                         @Html.ActionLink("Forgot your password?", "ForgotPassword")
-                    </p>*@
+                    </p>
             }
         </section>
     </div>

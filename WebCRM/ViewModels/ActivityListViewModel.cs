@@ -18,7 +18,7 @@ namespace WebCRM.ViewModels
                 if (StartDate == null)
                     return "";
                 else
-                    return string.Format("{0:yyyy-MM-dd hh:mm:ff tt}", StartDate);
+                    return string.Format("{0:yyyy-MM-dd HH:mm}", StartDate);
             }
         }
 
@@ -30,7 +30,7 @@ namespace WebCRM.ViewModels
                 if (EndDate == null)
                     return "";
                 else
-                    return string.Format("{0:yyyy-MM-dd hh:mm:ff tt}", EndDate);
+                    return string.Format("{0:yyyy-MM-dd HH:mm}", EndDate);
             }
         }
 

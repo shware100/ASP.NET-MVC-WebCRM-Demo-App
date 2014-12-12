@@ -51,26 +51,46 @@
                 },
 
                 eventDrop: function (event, delta, revertFunc) {
+                    var reqToken = $('input[name="__RequestVerificationToken"]').val();
+                    $.post("/ActivityHistories/UpdateCalendarDates", { "__RequestVerificationToken": reqToken, "activityID": event.ID, "months": delta._months, "days": delta._days, "msecs": delta._milliseconds }).done(function (data) {
+                        if (data.status != "+ok") {
+                            alert("Unable to save item - status was: " + data.status);
+                        }
+                        $('#activitiesCalendar').fullCalendar('refetchEvents');
+                    });
+                },
 
+                eventResize: function (event, delta, revertFunc) {
+                    var reqToken = $('input[name="__RequestVerificationToken"]').val();
+                    $.post("/ActivityHistories/UpdateCalendarDates", { "__RequestVerificationToken": reqToken, "activityID": event.ID, "months": delta._months, "days": delta._days, "msecs": delta._milliseconds, "resize": "true" }).done(function (data) {
+                        if (data.status != "+ok") {
+                            alert("Unable to save item - status was: " + data.status);
+                        }
+                        $('#activitiesCalendar').fullCalendar('refetchEvents');
+                    });
+                },
+
+                /* xxeventDrop: function (event, delta, revertFunc) {
+                    console.log("!!!!!!!!!!!!!!!!!!!!!!! start !!!!!!!!!!!!!!!!!!!!!!");
+                    console.log("event");
+                    console.log(event);
                     $('#dateChangeSubject').html(event.title);
                     $('#btnConfirmDateChange').click(function () {
                         var reqToken = $('input[name="__RequestVerificationToken"]').val();
-                        $.post("/ActivityHistories/UpdateCalendarDates", { "__RequestVerificationToken": reqToken, "activityID": event.ID, "days": delta._days }).done(function (data) {
+                        $.post("/ActivityHistories/UpdateCalendarDates", { "__RequestVerificationToken": reqToken, "activityID": event.ID, "months": delta._months, "days": delta._days, "msecs": delta._milliseconds }).done(function (data) {
                             if (data.status != "+ok") {
                                 alert("Unable to save item - status was: " + data.status);
                             }
-                            console.log("data");
-                            console.log(data);
+                            $('#activitiesCalendar').fullCalendar('refetchEvents');
                         });
                         $('#confirmDateChange').modal('hide');
                     });
                     $('#btnCancelDateChange').click(function () {
-                        console.log("change was cancelled");
                         revertFunc();
                     });
 
                     $('#confirmDateChange').modal('show');
-                }
+                } */
             }
             );
 
@@ -115,12 +135,21 @@
     });
 </script>
 
-<h2>Activities</h2>
 
-<div class="panel">
-    <div class="panel-heading"></div>
-    <div class="panel-footer text-right">
-        @Html.ActionLink("Create New", "Create", null, new {@id = "btnCreateNew", @class = "btn btn-info" })
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+      <div class="row">
+          <div class="col-md-6">
+              <h4>
+                  <span class="glyphicon glyphicon-calendar"></span>
+                  Activities
+              </h4>
+          </div>
+          <div class="col-md-6 text-right">
+              @Html.ActionLink("Create New", "Create", null, new { @id = "btnCreateNew", @class = "btn btn-info" })
+          </div>
+      </div>
     </div>
 </div>
 

@@ -10,16 +10,33 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
+using System.Net.Mail;
 using WebCRM.Models;
+using System.Configuration;
 
 namespace WebCRM
 {
     public class EmailService : IIdentityMessageService
     {
-        public Task SendAsync(IdentityMessage message)
+        public async Task SendAsync(IdentityMessage message)
         {
             // Plug in your email service here to send an email.
-            return Task.FromResult(0);
+            await SendMessageViaSmtpClient(message);
+        }
+
+        private async Task SendMessageViaSmtpClient(IdentityMessage message)
+        {
+            using (SmtpClient svc = new SmtpClient(ConfigurationManager.AppSettings["mailHost"], Int32.Parse(ConfigurationManager.AppSettings["mailPort"])))
+            {
+                var msg = new MailMessage();
+                msg.To.Add(message.Destination);
+                msg.From = new MailAddress(ConfigurationManager.AppSettings["mailFrom"]);
+                msg.Subject = message.Subject;
+                msg.IsBodyHtml = true;
+                msg.Body = message.Body;
+
+                await svc.SendMailAsync(msg);
+            }
         }
     }
 
