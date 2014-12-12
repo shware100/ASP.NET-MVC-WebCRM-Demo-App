@@ -58,11 +58,16 @@ namespace WebCRM
             //   appId: "",
             //   appSecret: "");
 
-            //app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
-            //{
-            //    ClientId = "",
-            //    ClientSecret = ""
-            //});
+            string fName = "..\\google-api-keys.secret";
+            string[] googleKeys = System.IO.File.ReadAllLines(fName);
+
+            app.UseGoogleAuthentication(new GoogleOAuth2AuthenticationOptions()
+            {
+                // TODO: remove this from here and put in an external file outside of source control
+                //       not to be posted to github.com
+                ClientId = googleKeys[0],
+                ClientSecret = googleKeys[1]
+            });
         }
     }
 }
